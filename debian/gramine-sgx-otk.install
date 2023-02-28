@@ -1,0 +1,5 @@
+usr/bin/gramine-sgx-otk
+usr/lib/python*
+target/release/signer           usr/lib/${DEB_HOST_MULTIARCH}/gramine-sgx-otk
+Cargo.lock                      usr/lib/${DEB_HOST_MULTIARCH}/gramine-sgx-otk
+gramine-sgx-otk.manifest.jinja  usr/share/gramine-sgx-otk

@@ -1,0 +1,58 @@
+{% if entrypoint is not defined -%}
+    {% set entrypoint = '/usr/lib/x86_64-linux-gnu/gramine-sgx-otk/signer' -%}
+{% endif -%}
+{% if ra_type is not defined -%}
+    {% set ra_type = 'dcap' -%}
+{% endif -%}
+{% set debug = debug is defined and debug == 'true' -%}
+
+[libos]
+entrypoint = "/gramine-sgx-otk"
+
+[loader]
+entrypoint = "file:{{ gramine.libos }}"
+{%- if log_level is defined %}
+log_level = "{{ log_level }}"
+{%- endif %}
+
+[loader.env]
+LD_LIBRARY_PATH = "/lib:/usr/lib/x86_64-linux-gnu:/lib/x86_64-linux-gnu"
+
+[fs]
+mounts = [
+    { path = "/lib", uri = "file:{{ gramine.runtimedir() }}" },
+    { path = "/lib/x86_64-linux-gnu", uri = "file:/lib/x86_64-linux-gnu" },
+    { path = "/usr/lib/x86_64-linux-gnu", uri = "file:/usr/lib/x86_64-linux-gnu" },
+    { path = "/gramine-sgx-otk", uri = "file:{{ entrypoint }}" },
+]
+
+[sys]
+stack.size = "2M"
+enable_extra_runtime_domain_names_conf = true
+
+[sgx]
+{%- if debug %}
+debug = true
+{%- endif %}
+enclave_size = "16M"
+max_threads = 2
+
+isvsvn = 0xffff
+
+remote_attestation = "{{ ra_type }}"
+{%- if ra_type == 'epid' %}
+ra_client_spid = "{{ ra_client_spid }}"
+ra_client_linkable = {{ ra_client_linkable }}
+{%- endif %}
+
+trusted_files = [
+    "file:{{ gramine.libos }}",
+    "file:{{ entrypoint }}",
+    "file:{{ gramine.runtimedir() }}/",
+    "file:/lib/x86_64-linux-gnu/libc.so.6",
+    "file:/lib/x86_64-linux-gnu/libgcc_s.so.1",
+    "file:/usr/lib/x86_64-linux-gnu/libssl.so.1.1",
+    "file:/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1",
+]
+
+{#- vim: set ft=jinja : #}

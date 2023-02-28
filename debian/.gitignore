@@ -1,0 +1,7 @@
+/debhelper-build-stamp
+/gramine-sgx-otk*/
+/tmp
+*.substvars
+*.debhelper
+*.log
+files

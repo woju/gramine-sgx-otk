@@ -1,0 +1,44 @@
+Source: gramine-sgx-otk
+Priority: optional
+Maintainer: Wojtek Porczyk <woju@invisiblethingslab.com>
+Build-Depends: debhelper-compat (= 13),
+ dh-sequence-python3,
+ dh-sequence-sphinxdoc,
+ cargo,
+ dh-python,
+ librust-openssl-dev,
+ python3,
+ rustc,
+Standards-Version: 4.1.3
+Section: misc
+
+Package: gramine-sgx-otk
+Architecture: amd64
+Description: One-Time-Key signing application for SGX/Gramine
+ SGX requires RSA signature for each enclave that is to be executed,
+ irrespective of if the signature is actually needed by the attestation (that
+ is, if you attest against ENCLAVEHASH aka MRENCLAVE, not against MRSIGNER).
+ Even if it's not really needed, CPU requires that the signature is present and
+ valid, and leakage of the RSA private key may compromise the data protected by
+ the enclave. Therefore the private key needs to be kept secure, in spite of the
+ fact that is serves no purpose for its holder.
+ .
+ This signing application generates random RSA keys and provably discards them
+ after a single operation. After the signing, there's no risk that the private
+ key leaks.
+Depends:
+ gramine | gramine-dcap | gramine-oot,
+ ${misc:Depends},
+ ${python3:Depends},
+ ${shlibs:Depends},
+
+Package: gramine-sgx-otk-doc
+Architecture: all
+Description: documentation for gramine-sgx-otk
+ HTML documentation for gramine-sgx-otk
+Section: doc
+Depends:
+ ${misc:Depends},
+ ${sphinxdoc:Depends},
+Built-Using:
+ ${sphinxdoc:Built-Using},
