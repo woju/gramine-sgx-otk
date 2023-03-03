@@ -67,23 +67,31 @@ class Sigstruct(bytearray):
     q1 =        _field(1040, 384)
     q2 =        _field(1424, 384)
 
-    def get_signing_data(self):
-        return self[0:128] + self[900:1028]
+    def __init__(self, *args, **kwds):
+        super().__init__(*args, **kwds)
 
-    @classmethod
-    def from_file(cls, file):
-        self = file.read(SIGSTRUCT_SZ + 1)
         if len(self) != SIGSTRUCT_SZ:
             raise InvalidSigstruct(
-                'wrong length: expected {SIGSTRUCT_SZ}, read {len(buf)}')
-        self = cls(self)
+                f'wrong length: expected {SIGSTRUCT_SZ}, got {len(self)}')
+
+        # Prevent bytearray from resizing by holding memoryview of ourselves.
+        # As long as memoryview lives, all operations that would change the
+        # length, like bytearray.append(), will instead raise BufferError.
+        # see also:
+        # https://docs.python.org/3/library/stdtypes.html#memoryview.release
+        self._m = memoryview(self)
 
         if self.header != SIGSTRUCT_HEADER:
             raise InvalidSigstruct('wrong HEADER')
         if self.header2 != SIGSTRUCT_HEADER2:
             raise InvalidSigstruct('wrong HEADER2')
 
-        return self
+    @classmethod
+    def from_file(cls, file):
+        return cls(file.read(SIGSTRUCT_SZ + 1))
+
+    def get_signing_data(self):
+        return self[0:128] + self[900:1028]
 
     def get_mrsigner(self):
         return get_mrsigner_for_modulus_le(self.modulus)
