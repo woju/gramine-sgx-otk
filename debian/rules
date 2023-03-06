@@ -13,9 +13,3 @@ override_dh_auto_build:
 	for builder in html man; do \
 		python3 -m sphinx -b $$builder -n Documentation Documentation/_build/$$builder; \
 	done
-
-#override_dh_sphinxdoc:
-#	dh_sphinxdoc Documentation/_build/html
-
-#override_dh_installdocs:
-#	dh_installdocs --doc-main-package=gramine-sgx-otk

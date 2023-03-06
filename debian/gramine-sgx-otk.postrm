@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+#DEBHELPER#
+
+case "$1" in
+purge)
+    rm -rf /var/lib/gramine-sgx-otk
+    ;;
+esac

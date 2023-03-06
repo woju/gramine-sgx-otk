@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -e
+
+#DEBHELPER#
+
+case "$1" in
+configure)
+    if test -d /var/lib/gramine-sgx-otk
+    then
+        # user has configured the app -- then we attempt to update the
+        # measurement, but if it faults, then do nothing
+        gramine-sgx-otk update-measurement || :
+    else
+        gramine-sgx-otk init
+    fi
+    ;;
+triggered)
+    gramine-sgx-otk update-measurement || :
+    ;;
+esac
